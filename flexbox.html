@@ -1,0 +1,706 @@
+<!doctype html>
+<html lang="en-us" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Flexbox</title>
+
+    <style>
+      @import "https://fonts.googleapis.com/css?family=Open+Sans";
+
+      html {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: avenir, roboto, helvetica, sans-serif;
+        margin: 10px 10px;
+        counter-reset: flex-label;
+      }
+
+      h2,
+      setting {
+        margin: 0;
+        white-space: nowrap;
+      }
+
+      h3 {
+        display: inline-block;
+        margin: 0;
+      }
+
+      setting {
+        display: block;
+        font-weight: bold;
+      }
+
+      #togglesettings,
+      #reset {
+        background-color: black;
+        display: inline-block;
+        width: -moz-fit-content;
+        color: white;
+        padding: .2em 0.5em;
+        font-size: 0.7em;
+        cursor: pointer;
+        border-radius: 5px;
+        height: 1.5em;
+      }
+
+      #settings-checkbox {
+        display: none;
+      }
+
+      settingscontainer {
+        margin-top: 5px;
+        display: grid;
+        grid-template-columns: min-content auto;
+        grid-row-gap: 0.5em;
+        grid-column-gap: 0.5em;
+        overflow-y: hidden;
+        transition: max-height 0.25s ease-in;
+        max-height: 1000px;
+        font-size: 0.7em;
+      }
+
+      settingscontainer.collapsed {
+        max-height: 0;
+      }
+
+      settingscontainer div {
+        display: inline-block;
+      }
+
+      input[type="text"] {
+        font-family: avenir, roboto, helvetica, sans-serif;
+        font-size: 1em;
+        width: 4em;
+        height: 1.2em;
+        padding-right: 2em;
+        border-radius: 5px;
+      }
+
+      input[type="button"] {
+        height: 2em;
+        -moz-appearance: none;
+        background-color: transparent;
+        border: none;
+        position: relative;
+        left: -2.5em;
+        cursor: pointer;
+      }
+
+      input[type="range"] {
+        vertical-align: middle;
+      }
+
+      input[type="radio"] {
+        display: none;
+      }
+
+      input[type="radio"] + label {
+        display: inline-block;
+        padding: 0 0.3em;
+        cursor: pointer;
+        border: 1px solid black;
+        color: black;
+        background-color: white;
+        border-radius: 5px;
+        margin: 0;
+      }
+
+      input[type="radio"]:checked + label {
+        background-color: black;
+        color: white;
+      }
+
+      input[type="radio"]:first-of-type {
+        border-radius: .7em 0 0 .7em;
+      }
+
+      input[type="radio"]:last-of-type {
+        border-radius: 0 .7em .7em 0;
+      }
+
+      section {
+        margin-bottom: 4rem;
+        padding-bottom: 4rem;
+        border-bottom: 1px solid pink;
+      }
+
+      #output {
+        margin: 0 100px;
+      }
+
+      flex-container {
+        padding: 0;
+      }
+
+      flex-item {
+        display: block;
+        padding: 1rem 2rem;
+        border: 1px solid black;
+        background: #eee;
+        margin: 0.5rem;
+      }
+
+      flex-item:before {
+        counter-increment: flex-label;
+        content: counter(flex-label);
+      }
+    </style>
+
+    <script>
+      const containerName = "flex-container";
+      const flexItemName = "flex-item";
+
+      const DEFAULTSETTINGS = `[
+        ["align-content","normal"],
+        ["align-items","flex-end"],
+        ["align-self-targets","1"],
+        ["align-self","flex-start"],
+        ["box-sizing","content-box"],
+        ["collapsed",false],
+        ["direction","ltr"],
+        ["display","flex"],
+        ["flex-basis","auto"],
+        ["flex-direction","row"],
+        ["flex-grow","1"],
+        ["flex-grow-targets","20"],
+        ["flex-items","40"],
+        ["flex-shrink-targets","26"],
+        ["flex-shrink","2"],
+        ["flex-wrap","wrap"],
+        ["flexorder-items","3,11"],
+        ["flexorder-targets","8,3"],
+        ["height",""],
+        ["justify-content","flex-start"],
+        ["multiline-flexitems-targets","5,7"],
+        ["multiline-flexitems-text","extra"],
+        ["width",""],
+        ["writing-mode","horizontal-tb"]
+      ]`;
+
+      function init() {
+        window.addEventListener("hashchange", onHashChange, false);
+
+        if (!document.location.hash) {
+          reset();
+        }
+      }
+
+      function onControlChange() {
+        const radios = [...document.querySelectorAll(`input[type="radio"]`)];
+        const textFields = [...document.querySelectorAll(`input[type="text"]`)];
+        const cb = document.querySelector("#settings-checkbox");
+        const collapsed = cb.checked;
+        const settings = new Map();
+
+        // Get current values.
+        const radioValues = radios.filter(node => {
+          return node.checked
+        }).map(node => {
+          const previousSibling = node.parentNode.previousElementSibling ||
+                                node.parentNode.parentNode.previousElementSibling;
+
+          settings.set(previousSibling.textContent, node.value);
+        });
+
+        const textValues = textFields.map(node => {
+          settings.set(node.id, node.value);
+        });
+
+        settings.set("collapsed", collapsed);
+
+        document.location = `#${JSON.stringify([...settings])}`;
+      }
+
+      function onHashChange(event) {
+        const container = document.querySelector("settingscontainer");
+        const settings = getSettings();
+
+        for (const [name, value] of settings.entries()) {
+          switch(name) {
+            case "collapsed":
+              if (value) {
+                container.classList.add("collapsed");
+              } else {
+                container.classList.remove("collapsed");
+              }
+              break;
+            case "box-sizing":
+            case "display":
+            case "direction":
+            case "writing-mode":
+            case "flex-direction":
+            case "flex-wrap":
+            case "justify-content":
+            case "align-items":
+            case "align-content":
+            case "flex-basis":
+            case "align-self":
+              const radio = document.querySelector(`[name="${name}"][value="${value}"]`);
+              radio.checked = true;
+              break;
+            case "width":
+            case "height":
+            case "flex-items":
+            case "multiline-flexitems-targets":
+            case "multiline-flexitems-text":
+            case "flexorder-items":
+            case "flexorder-targets":
+            case "align-self-targets":
+            case "flex-grow":
+            case "flex-grow-targets":
+            case "flex-shrink":
+            case "flex-shrink-targets":
+              const textNode = document.querySelector(`#${name}`);
+              textNode.value = value;
+              break;
+          }
+        }
+
+        createFlexbox();
+      }
+
+      function getSettings() {
+        const container = document.querySelector("settingscontainer");
+        const hash = decodeURI(document.location.hash.substring(1)) || getDefaultSettings();
+
+        return new Map(JSON.parse(hash));
+      }
+
+      function getDefaultSettings() {
+        return `[
+          ["align-content","normal"],
+          ["align-items","flex-end"],
+          ["align-self-targets","1"],
+          ["align-self","flex-start"],
+          ["box-sizing","content-box"],
+          ["collapsed",false],
+          ["direction","ltr"],
+          ["display","flex"],
+          ["flex-basis","auto"],
+          ["flex-direction","row"],
+          ["flex-grow","1"],
+          ["flex-grow-targets","20"],
+          ["flex-items","40"],
+          ["flex-shrink-targets","26"],
+          ["flex-shrink","2"],
+          ["flex-wrap","wrap"],
+          ["flexorder-items","3,11"],
+          ["flexorder-targets","8,3"],
+          ["height",""],
+          ["justify-content","flex-start"],
+          ["multiline-flexitems-targets","5,7"],
+          ["multiline-flexitems-text","extra"],
+          ["width",""],
+          ["writing-mode","horizontal-tb"]
+        ]`;
+      }
+
+      function createFlexbox() {
+        const output = document.querySelector("#output");
+        const settings = getSettings();
+        const width = settings.get("width");
+        const height = settings.get("height");
+        const multilineTargets = getSettingAsArray("multiline-flexitems-targets");
+        const alignSelfTargets = getSettingAsArray("align-self-targets");
+        const flexGrowTargets = getSettingAsArray("flex-grow-targets");
+        const flexShrinkTargets = getSettingAsArray("flex-shrink-targets");
+
+        output.querySelector(containerName).remove();
+
+        output.style.boxSizing = settings.get("box-sizing");
+        output.style.direction = settings.get("direction");
+        output.style.writingMode = settings.get("writing-mode");
+
+        const flexContainer = document.createElement(containerName);
+        flexContainer.style.display = settings.get("display");
+        flexContainer.style.flexDirection = settings.get("flex-direction");
+        flexContainer.style.flexWrap = settings.get("flex-wrap");
+        flexContainer.style.justifyContent = settings.get("justify-content");
+        flexContainer.style.alignContent = settings.get("align-content");
+        flexContainer.style.alignItems = settings.get("align-items");
+
+        flexContainer.style.width = width;
+        flexContainer.style.height = height;
+
+        for (let i = 0; i < settings.get("flex-items"); i++) {
+          const flexItem = document.createElement(flexItemName);
+          const currentItem = i + 1;
+
+          if (multilineTargets.has(currentItem)) {
+            const br = document.createElement("br");
+            const text = document.createTextNode(
+              settings.get("multiline-flexitems-text")
+            );
+
+            flexItem.appendChild(br);
+            flexItem.appendChild(text);
+          }
+
+          if (alignSelfTargets.has(currentItem)) {
+            flexItem.style.alignSelf = settings.get("align-self");
+          }
+
+          if (flexGrowTargets.has(currentItem)) {
+            flexItem.style.flexGrow = settings.get("flex-grow");
+          }
+
+          if (flexShrinkTargets.has(currentItem)) {
+            flexItem.style.flexShrink = settings.get("flex-shrink");
+          }
+
+          flexItem.style.flexBasis = settings.get("flex-basis");
+          flexItem.id = `flex-item-${currentItem}`;
+
+          flexContainer.appendChild(flexItem);
+        }
+
+        initFlexOrder(flexContainer);
+
+        output.appendChild(flexContainer);
+      }
+
+      function initFlexOrder(flexContainer) {
+        const settings = getSettings();
+        const flexOrderItems = settings.get("flexorder-items")
+                                       .split(/[,\s]/)
+                                       .map(num => {
+                                         return parseInt(num, 10);
+                                       });
+        const flexOrderTargets = settings.get("flexorder-targets")
+                                         .split(/[,\s]/)
+                                         .map(num => {
+                                           return parseInt(num, 10);
+                                         });
+
+        for (let i = 0; i < flexOrderItems.length; i++) {
+          const src = flexOrderItems[i];
+          const dest = flexOrderTargets[i];
+          const flexItem = flexContainer.querySelector(`#flex-item-${src}`);
+
+          flexItem.style.order = dest;
+        }
+
+        const flexItems = [...flexContainer.querySelectorAll("flex-item")];
+        for (let i = 0; i < flexItems.length; i++) {
+          const flexItem = flexItems[i];
+
+          if (flexItem.style.order === "") {
+            flexItem.style.order = i + 1;
+          }
+        }
+      }
+
+      function getSettingAsArray(setting) {
+        const settings = getSettings();
+
+        return new Set(settings.get(setting)
+                               .split(/[,\s]/)
+                               .map(num => {
+                                 return parseInt(num, 10);
+                               }));
+      }
+
+      function toggleSettings() {
+        const cb = document.querySelector("#settings-checkbox");
+
+        cb.checked = !cb.checked;
+        onControlChange();
+      }
+
+      function reset() {
+        document.location.href = `#${getDefaultSettings()}`;
+        onHashChange();
+      }
+    </script>
+  </head>
+
+  <body onLoad="init()" onchange="onControlChange()">
+    <h3>Settings</h3>
+    <div id="togglesettings" onclick="toggleSettings()">Collapse</div>
+    <input type="checkbox" id="settings-checkbox" />
+    <div id="reset" onclick="reset()">Reset</div>
+
+    <settingscontainer>
+      <setting>box-sizing</setting>
+      <div>
+        <input type="radio" name="box-sizing" value="content-box" id="bs1" />
+        <label for="bs1">content-box</label>
+        <input type="radio" name="box-sizing" value="border-box" id="bs2" />
+        <label for="bs2">border-box</label>
+      </div>
+
+      <setting>display</setting>
+      <div>
+        <input type="radio" name="display" value="flex" id="d1" />
+        <label for="d1">flex</label>
+        <input type="radio" name="display" value="inline-flex" id="d2" />
+        <label for="d2">inline-flex</label>
+      </div>
+
+      <setting>direction</setting>
+      <div>
+        <input type="radio" name="direction" value="ltr" id="dir1" />
+        <label for="dir1">ltr</label>
+        <input type="radio" name="direction" value="rtl" id="dir2" />
+        <label for="dir2">rtl</label>
+      </div>
+
+      <setting>writing-mode</setting>
+      <div>
+        <input type="radio" name="writing-mode" value="horizontal-tb" id="wm1" />
+        <label for="wm1">horizontal-tb</label>
+        <input type="radio" name="writing-mode" value="vertical-rl" id="wm2" />
+        <label for="wm2">vertical-rl</label>
+        <input type="radio" name="writing-mode" value="vertical-lr" id="wm3" />
+        <label for="wm3">vertical-lr</label>
+        <input type="radio" name="writing-mode" value="sideways-rl" id="wm4" />
+        <label for="wm4">sideways-rl</label>
+        <input type="radio" name="writing-mode" value="sideways-lr" id="wm5" />
+        <label for="wm5">sideways-lr</label>
+      </div>
+
+      <setting>flex-direction</setting>
+      <div>
+        <input type="radio" name="flex-direction" value="row" id="fd1" />
+        <label for="fd1">row</label>
+        <input type="radio" name="flex-direction" value="row-reverse" id="fd2" />
+        <label for="fd2">row-reverse</label>
+        <input type="radio" name="flex-direction" value="column" id="fd3" />
+        <label for="fd3">column</label>
+        <input type="radio" name="flex-direction" value="column-reverse" id="fd4" />
+        <label for="fd4">column-reverse</label>
+      </div>
+
+      <setting>flex-wrap</setting>
+      <div>
+        <input type="radio" name="flex-wrap" value="nowrap" id="fw1" />
+        <label for="fw1">no-wrap</label>
+        <input type="radio" name="flex-wrap" value="wrap" id="fw2" />
+        <label for="fw2">wrap</label>
+        <input type="radio" name="flex-wrap" value="wrap-reverse" id="fw3" />
+        <label for="fw3">wrap-reverse</label>
+      </div>
+
+      <setting>justify-content</setting>
+      <div>
+        <input type="radio" name="justify-content" value="start" id="jc1" />
+        <label for="jc1">start</label>
+        <input type="radio" name="justify-content" value="end" id="jc2" />
+        <label for="jc2">end</label>
+        <input type="radio" name="justify-content" value="flex-start" id="jc3" />
+        <label for="jc3">flex-start</label>
+        <input type="radio" name="justify-content" value="flex-end" id="jc4" />
+        <label for="jc4">flex-end</label>
+        <input type="radio" name="justify-content" value="center" id="jc5" />
+        <label for="jc5">center</label>
+        <input type="radio" name="justify-content" value="left" id="jc6" />
+        <label for="jc6">left</label>
+        <input type="radio" name="justify-content" value="right" id="jc7" />
+        <label for="jc7">right</label>
+        <input type="radio" name="justify-content" value="normal" id="jc8" />
+        <label for="jc8">normal</label>
+        <input type="radio" name="justify-content" value="baseline" id="jc9" />
+        <label for="jc9">baseline</label>
+        <input type="radio" name="justify-content" value="first baseline" id="jc10" />
+        <label for="jc10">first baseline</label>
+        <input type="radio" name="justify-content" value="last baseline" id="jc11" />
+        <label for="jc11">last baseline</label>
+        <input type="radio" name="justify-content" value="space-between" id="jc12" />
+        <label for="jc12">space-between</label>
+        <input type="radio" name="justify-content" value="space-around" id="jc13" />
+        <label for="jc13">space-around</label>
+        <input type="radio" name="justify-content" value="space-evenly" id="jc14" />
+        <label for="jc14">space-evenly</label>
+        <input type="radio" name="justify-content" value="stretch" id="jc15" />
+        <label for="jc15">stretch</label>
+        <input type="radio" name="justify-content" value="safe" id="jc16" />
+        <label for="jc16">safe</label>
+        <input type="radio" name="justify-content" value="unsafe" id="jc17" />
+        <label for="jc17">unsafe</label>
+      </div>
+
+      <setting>align-items</setting>
+      <div>
+        <input type="radio" name="align-items" value="normal" id="ai1" />
+        <label for="ai1">normal</label>
+        <input type="radio" name="align-items" value="flex-start" id="ai2" />
+        <label for="ai2">flex-start</label>
+        <input type="radio" name="align-items" value="flex-end" id="ai3" />
+        <label for="ai3">flex-end</label>
+        <input type="radio" name="align-items" value="center" id="ai4" />
+        <label for="ai4">center</label>
+        <input type="radio" name="align-items" value="start" id="ai5" />
+        <label for="ai5">start</label>
+        <input type="radio" name="align-items" value="end" id="ai6" />
+        <label for="ai6">end</label>
+        <input type="radio" name="align-items" value="self-start" id="ai7" />
+        <label for="ai7">self-start</label>
+        <input type="radio" name="align-items" value="self-end" id="ai8" />
+        <label for="ai8">self-end</label>
+        <input type="radio" name="align-items" value="baseline" id="ai9" />
+        <label for="ai9">baseline</label>
+        <input type="radio" name="align-items" value="first baseline" id="ai10" />
+        <label for="ai10">first baseline</label>
+        <input type="radio" name="align-items" value="last baseline" id="ai11" />
+        <label for="ai11">last baseline</label>
+        <input type="radio" name="align-items" value="stretch" id="ai12" />
+        <label for="ai12">stretch</label>
+        <input type="radio" name="align-items" value="safe" id="ai13" />
+        <label for="ai13">safe</label>
+        <input type="radio" name="align-items" value="unsafe" id="ai14" />
+        <label for="ai14">unsafe</label>
+      </div>
+
+      <setting>align-content</setting>
+      <div>
+        <input type="radio" name="align-content" value="start" id="ac1" />
+        <label for="ac1">start</label>
+        <input type="radio" name="align-content" value="end" id="ac2" />
+        <label for="ac2">end</label>
+        <input type="radio" name="align-content" value="flex-start" id="ac3" />
+        <label for="ac3">flex-start</label>
+        <input type="radio" name="align-content" value="flex-end" id="ac4" />
+        <label for="ac4">flex-end</label>
+        <input type="radio" name="align-content" value="center" id="ac5" />
+        <label for="ac5">center</label>
+        <input type="radio" name="align-content" value="normal" id="ac6" />
+        <label for="ac6">normal</label>
+        <input type="radio" name="align-content" value="baseline" id="ac7" />
+        <label for="ac7">baseline</label>
+        <input type="radio" name="align-content" value="first baseline" id="ac8" />
+        <label for="ac8">first baseline</label>
+        <input type="radio" name="align-content" value="last baseline" id="ac9" />
+        <label for="ac9">last baseline</label>
+        <input type="radio" name="align-content" value="space-between" id="ac10" />
+        <label for="ac10">space-between</label>
+        <input type="radio" name="align-content" value="space-around" id="ac11" />
+        <label for="ac11">space-around</label>
+        <input type="radio" name="align-content" value="space-evenly" id="ac12" />
+        <label for="ac12">space-evenly</label>
+        <input type="radio" name="align-content" value="stretch" id="ac13" />
+        <label for="ac13">stretch</label>
+        <input type="radio" name="align-content" value="safe" id="ac14" />
+        <label for="ac14">safe</label>
+        <input type="radio" name="align-content" value="unsafe" id="ac15" />
+        <label for="ac15">unsafe</label>
+      </div>
+
+      <setting>flex-basis</setting>
+      <div>
+        <input type="radio" name="flex-basis" value="auto" id="fb1" />
+        <label for="fb1">auto</label>
+        <input type="radio" name="flex-basis" value="fill" id="fb2" />
+        <label for="fb2">fill</label>
+        <input type="radio" name="flex-basis" value="max-content" id="fb3" />
+        <label for="fb3">max-content</label>
+        <input type="radio" name="flex-basis" value="min-content" id="fb4" />
+        <label for="fb4">min-content</label>
+        <input type="radio" name="flex-basis" value="fit-content" id="fb5" />
+        <label for="fb5">fit-content</label>
+        <input type="radio" name="flex-basis" value="content" id="fb6" />
+        <label for="fb6">content</label>
+      </div>
+
+      <setting>width</setting>
+      <input type="text" id="width" />
+
+      <setting>height</setting>
+      <input type="text" id="height" />
+
+      <setting>flex-items</setting>
+      <input id="flex-items" type="text" />
+
+      <setting>Multiline flexitem(s)</setting>
+      <div>
+        For flex item(s)
+        <input id="multiline-flexitems-targets" type="text" />
+        append the following text
+        <input id="multiline-flexitems-text" type="text" />
+      </div>
+
+      <setting>align-self</setting>
+      <div>
+        For flex item(s)
+        <input id="align-self-targets" type="text" />
+        set align-self to
+        <input type="radio" name="align-self" value="auto" id="as1" />
+        <label for="as1">auto</label>
+        <input type="radio" name="align-self" value="normal" id="as2" />
+        <label for="as2">normal</label>
+        <input type="radio" name="align-self" value="center" id="as3" />
+        <label for="as3">center</label>
+        <input type="radio" name="align-self" value="start" id="as4" />
+        <label for="as4">start</label>
+        <input type="radio" name="align-self" value="end" id="as5" />
+        <label for="as5">end</label>
+        <input type="radio" name="align-self" value="self-start" id="as6" />
+        <label for="as6">self-start</label>
+        <input type="radio" name="align-self" value="self-end" id="as7" />
+        <label for="as7">self-end</label>
+        <input type="radio" name="align-self" value="flex-start" id="as8" />
+        <label for="as8">flex-start</label>
+        <input type="radio" name="align-self" value="flex-end" id="as9" />
+        <label for="as9">flex-end</label>
+        <input type="radio" name="align-self" value="baseline" id="as10" />
+        <label for="as10">baseline</label>
+        <input type="radio" name="align-self" value="first baseline" id="as11" />
+        <label for="as11">first baseline</label>
+        <input type="radio" name="align-self" value="last baseline" id="as12" />
+        <label for="as12">last baseline</label>
+        <input type="radio" name="alin-self" value="stretch" id="as13" />
+        <label for="as13">stretch</label>
+        <input type="radio" name="align-self" value="safe center" id="as14" />
+        <label for="as14">safe center</label>
+        <input type="radio" name="align-self" value="unsafe center" id="as15" />
+        <label for="as15">unsafe center</label>
+      </div>
+
+      <setting>Flexitem order</setting>
+      <div>
+        For flex item(s)
+        <input id="flexorder-items" type="text" />
+        set order to
+        <input id="flexorder-targets" type="text" />
+      </div>
+
+      <setting>flex-grow</setting>
+      <div>
+        For flex item(s)
+        <input id="flex-grow-targets" type="text" />
+        set flex-grow to
+        <input id="flex-grow" type="text" />
+      </div>
+
+      <setting>flex-shrink</setting>
+      <div>
+        For flex item(s)
+        <input id="flex-shrink-targets" type="text" />
+        set flex-shrink to
+        <input id="flex-shrink" type="text" />
+      </div>
+    </settingscontainer>
+
+    <hr>
+
+    <div id="output">
+      <flex-container class="row">
+        <flex-item></flex-item>
+        <flex-item></flex-item>
+        <flex-item></flex-item>
+        <flex-item></flex-item>
+        <flex-item><br>text</flex-item>
+        <flex-item></flex-item>
+        <flex-item></flex-item>
+        <flex-item></flex-item>
+        <flex-item></flex-item>
+        <flex-item></flex-item>
+        <flex-item></flex-item>
+        <flex-item></flex-item>
+        <flex-item></flex-item>
+      </flex-container>
+    </div>
+  </body>
+</html>

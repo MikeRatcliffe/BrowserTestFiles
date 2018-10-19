@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <title>Storage inspector cookies with duplicate names</title>
+
+  <script type="application/javascript;version=1.7">
+    "use strict";
+    function createCookies() {
+      document.cookie = "value=somevalue1; path=/; expires=Fri, 31 Dec 2099 23:59:59 GMT;";
+      document.cookie = "value=somevalue2; path=/path2/; expires=Fri, 31 Dec 2099 23:59:59 GMT;";
+      document.cookie = "value=somevalue3; path=/path3/; expires=Fri, 31 Dec 2099 23:59:59 GMT;";
+    }
+
+    window.removeCookie = function (name) {
+      document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    };
+
+    window.clearCookies = function () {
+      let cookies = document.cookie;
+      for (let cookie of cookies.split(";")) {
+        removeCookie(cookie.split("=")[0]);
+      }
+    };
+  </script>
+</head>
+<body onload="createCookies()">
+  <h1>Storage inspector cookies with duplicate names.html</h1>
+</body>
+</html>

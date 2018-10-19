@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Bug 1270884 - jQuery delegated events are not shown in the developer console</title>
+
+    <script src="https://code.jquery.com/jquery-2.2.3.js" integrity="sha256-laXWtGydpwqJ8JA+X9x2miwmaiKhn8tVmOVEigRNtP4=" crossorigin="anonymous"></script>
+
+    <script>
+      $(document).ready(function(){
+      	$(".media_preview_container").on("click.test", ".media_preview", function() {
+      		alert('clicked on media preview class');
+      	});
+      });
+    </script>
+
+    <!-- <script>
+      $( "body" ).delegate( "p", "click", function() {
+        $( this ).after( "<p>Another paragraph!</p>" );
+      });
+
+      // The delegate() method was deprecated in version 3.0. Use the on() method instead.
+      $( "table" ).on( "click", "td", function() {
+        $( this ).toggleClass( "chosen" );
+      });
+    </script> -->
+
+    <style>
+      .media_preview {
+      	width:100px;
+      	height:100px;
+      	display:inline-block;
+      	margin:10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="media_preview_container"
+         style="width:300px;height:300px;background-color:black;">
+    	<div class="media_preview" style="background-color:red;"></div>
+    	<div class="media_preview" style="background-color:blue;"></div>
+    	<div class="media_preview" style="background-color:yellow;"></div>
+    </div>
+  </body>
+</html>

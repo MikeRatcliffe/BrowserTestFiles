@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Event bubble doesn't update when listener added to window, document or documentElement after loading the markup view</title>
+
+    <style>
+      code {
+        background-color: #f9f9f9;
+        border: 1px dashed #bbb;
+        color: black;
+        line-height: 1.1em;
+        padding: 0.1em;
+        border-radius: 5px;
+      }
+    </style>
+
+    <script>
+      function init() {
+        let button = document.getElementById("add-all");
+        button.addEventListener("click", addAll, true);
+
+        button = document.getElementById("add-window");
+        button.addEventListener("click", addWindow, true);
+
+        button = document.getElementById("add-document");
+        button.addEventListener("click", addDocument, true);
+
+        button = document.getElementById("add-document-element");
+        button.addEventListener("click", addDocumentElement, true);
+
+        button = document.getElementById("add-body");
+        button.addEventListener("click", addBody, true);
+      }
+
+      function windowClick() {
+        alert("windowClick");
+      }
+
+      function documentClick() {
+        alert("documentClick");
+      }
+
+      function documentElementClick() {
+        alert("documentElementClick");
+      }
+
+      function bodyClick() {
+        alert("bodyClick");
+      }
+
+      function addAll() {
+        addWindow();
+        addDocument();
+        addDocumentElement();
+        addBody();
+      }
+
+      function removeAll() {
+        removeWindow();
+        removeDocument();
+        removeDocumentElement();
+        removeBody();
+      }
+
+      function addWindow() {
+        removeWindow();
+        window.addEventListener("click", windowClick, true);
+      }
+
+      function removeWindow() {
+        window.removeEventListener("click", windowClick, true);
+      }
+
+      function addDocument() {
+        removeDocument();
+        document.addEventListener("click", documentClick, true);
+      }
+
+      function removeDocument() {
+        document.removeEventListener("click", documentClick, true);
+      }
+
+      function addDocumentElement() {
+        removeDocumentElement();
+        document.documentElement.addEventListener("click", documentElementClick, true);
+      }
+
+      function removeDocumentElement() {
+        document.documentElement.removeEventListener("click", documentElementClick, true);
+      }
+
+      function addBody() {
+        removeBody();
+        document.body.addEventListener("click", bodyClick, true);
+      }
+
+      function removeBody() {
+        document.body.removeEventListener("click", bodyClick, true);
+      }
+    </script>
+  </head>
+  <body onload="init()">
+    <h3>Event bubble doesn't update when listener added to window, document or documentElement after loading the markup view</h3>
+    <button id="add-all">Add all listeners</button><br><br>
+    <button id="add-window">Add window listener</button><br>
+    <button id="add-document">Add document listener</button><br>
+    <button id="add-document-element">Add documentElement listener</button><br>
+    <button id="add-body">Add body listener</button><br><br>
+    <button id="remove-all">Remove all listeners</button><br>
+    <button id="remove-window">Remove window listener</button><br>
+    <button id="remove-document">Remove document listener</button><br>
+    <button id="remove-document-element">Remove documentElement listener</button><br>
+    <button id="remove-body">Remove body listener</button><br>
+    <br><br>
+    <div>
+      <h4>Works</h4>
+
+      <p><code>window.addEventListener("click", function() {alert(1)})</code></p>
+      <p><code>window.onclick=function(e){console.log(1)}</code></p>
+      <p><code>document.body.addEventListener("click", function()</code> {alert(1)})</code>
+      <p><code>document.body.onclick=function(e){console.log(1)}</code></p>
+
+      <h4>Broken (although closing and reopening the markup view does display the listeners)</h4>
+
+      <p><code>document.addEventListener("click", function() {alert(1)})</code></p>
+      <p><code>document.onclick=function(e){console.log(1)}</code></p>
+      <p><code>document.documentElement.addEventListener("click", function()</code> {alert(1)})</code>
+      <p><code>document.documentElement.onclick=function(e){console.log(1)}</code></p>
+      <p><code>data:text/html,&lt;input onclick="window.onclick=function(e){console.log(1)}"&gt;</code><br>Iteresting that <code>window.onclick=function(e){console.log(1)}</code> works from the web console.</p>
+      <p><code>data:,a</code> creates a document of type text/plain so event listeners are not supported. We probably don't detect the listener because mutation observers don't work in plain text documents.</p>
+
+      <h4>Most relevant issues</h4>
+      <p>This document.body and window listeners are detected&hellip; document and documentElement events are missed.</p>
+    </div>
+  </body>
+</html>

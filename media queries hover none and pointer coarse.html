@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>pointer:course and hover:none test</title>
+  <style>
+    /* Make radio buttons and check boxes larger if we have an inaccurate pointing device */
+    @media (pointer:coarse) {
+      #pointer-coarse {
+        background-color: green;
+      }
+    }
+
+    @media (hover:none) {
+      #hover-none {
+        background-color: green;
+      }
+    }
+  </style>
+</head>
+<body>
+  Green background = True/Enabled in your browser/UA
+  <div id="hover-none">hover: none</div>
+  <input id="pointer-coarse" type="checkbox" />
+</body>
+</html>

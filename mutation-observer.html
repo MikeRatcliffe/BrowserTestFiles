@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Event</title>
+
+    <script>
+      let observer;
+
+      function init() {
+        addObservers();
+
+        let button = document.querySelector("button");
+        let div = document.querySelector("div");
+        button.addEventListener("click", () => {
+          div.removeEventListener("mousedown", mousedown);
+          div.removeEventListener("mouseup", mouseup);
+
+          div.addEventListener("mousedown", mousedown);
+          div.addEventListener("mouseup", mouseup);
+        });
+      }
+
+      function addObservers() {
+        let target = document.body;
+
+        observer = new MutationObserver(function(mutations) {
+          mutations.forEach(function(mutation) {
+            console.log(mutation.type);
+          });
+        });
+
+        var config = { attributes: true, childList: true, characterData: true };
+
+        observer.observe(target, config);
+      }
+
+      function removeObservers() {
+        observer.disconnect();
+      }
+
+      function mousedown() {
+        alert("mousedown");
+      }
+
+      function mouseup() {
+        alert("mouseup");
+      }
+    </script>
+  </head>
+  <body onload="init()">
+    <button>Click me!</button>
+    <div style="width: 400px; height: 400px; border: 1px solid black;">Target zone</div>
+  </body>
+</html>

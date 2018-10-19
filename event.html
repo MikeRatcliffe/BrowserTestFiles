@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Event</title>
+
+    <script>
+      function doit() {
+        let button = document.querySelector("button");
+
+        button.addEventListener("click", onClick);
+        button.addEventListener("dblclick", onClick);
+        button.addEventListener("mousedown", onClick);
+        // button.addEventListener("mouseenter", onClick);
+        // button.addEventListener("mouseleave", onClick);
+        // button.addEventListener("mouseout", onClick);
+        // button.addEventListener("mouseover", onClick);
+        // button.addEventListener("mouseup", onClick);
+        // button.addEventListener("scroll", onClick);
+      }
+
+      function onClick() {
+        let x = 0;
+        let y = 0;
+
+        // Initialize stuff.
+        x = y + x;
+        y = x + x;
+        x = x + y;
+        y = y + x;
+
+        // Do some stuff.
+        x = y + x;
+        y = x + x;
+        x = x + y;
+        y = y + x;
+
+        // Do more stuff
+        x = y + x;
+        y = x + x;
+        x = x + y;
+        y = y + x;
+
+        return y;
+      }
+    </script>
+  </head>
+  <body onload="doit()">
+    <button>Click me!</button>
+  </body>
+</html>
