@@ -127,12 +127,9 @@
         border-bottom: 1px solid pink;
       }
 
-      #output {
-        margin: 0 100px;
-      }
-
       flex-container {
         padding: 0;
+        margin: 0 100px;
       }
 
       flex-item {
@@ -299,7 +296,6 @@
       }
 
       function createFlexbox() {
-        const output = document.querySelector("#output");
         const settings = getSettings();
         const width = settings.get("width");
         const height = settings.get("height");
@@ -308,16 +304,12 @@
         const flexGrowTargets = getSettingAsArray("flex-grow-targets");
         const flexShrinkTargets = getSettingAsArray("flex-shrink-targets");
 
-        const oldContainer = output.querySelector(containerName);
-        if (oldContainer) {
-          oldContainer.remove();
-        }
+        const flexContainer = document.querySelector(containerName);
+        flexContainer.innerHTML = "";
 
-        output.style.boxSizing = settings.get("box-sizing");
-        output.style.direction = settings.get("direction");
-        output.style.writingMode = settings.get("writing-mode");
-
-        const flexContainer = document.createElement(containerName);
+        flexContainer.style.boxSizing = settings.get("box-sizing");
+        flexContainer.style.direction = settings.get("direction");
+        flexContainer.style.writingMode = settings.get("writing-mode");
         flexContainer.style.display = settings.get("display");
         flexContainer.style.flexDirection = settings.get("flex-direction");
         flexContainer.style.flexWrap = settings.get("flex-wrap");
@@ -361,8 +353,6 @@
         }
 
         initFlexOrder(flexContainer);
-
-        output.appendChild(flexContainer);
       }
 
       function initFlexOrder(flexContainer) {
@@ -688,6 +678,6 @@
 
     <hr>
 
-    <div id="output"></div>
+    <flex-container></flex-container>
   </body>
 </html>
