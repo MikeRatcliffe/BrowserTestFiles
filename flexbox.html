@@ -150,7 +150,7 @@
       const containerName = "flex-container";
       const flexItemName = "flex-item";
 
-      const DEFAULTSETTINGS = `[
+      const DEFAULT_SETTINGS = `[
         ["align-content","normal"],
         ["align-items","flex-end"],
         ["align-self-targets","1"],
@@ -263,38 +263,9 @@
 
       function getSettings() {
         const container = document.querySelector("settingscontainer");
-        const hash = decodeURI(document.location.hash.substring(1)) || getDefaultSettings();
+        const hash = decodeURI(document.location.hash.substring(1)) || DEFAULT_SETTINGS;
 
         return new Map(JSON.parse(hash));
-      }
-
-      function getDefaultSettings() {
-        return `[
-          ["align-content","normal"],
-          ["align-items","flex-end"],
-          ["align-self-targets","1"],
-          ["align-self","flex-start"],
-          ["box-sizing","content-box"],
-          ["collapsed",false],
-          ["direction","ltr"],
-          ["display","flex"],
-          ["flex-basis","auto"],
-          ["flex-direction","row"],
-          ["flex-grow","1"],
-          ["flex-grow-targets","20"],
-          ["flex-items","40"],
-          ["flex-shrink-targets","26"],
-          ["flex-shrink","2"],
-          ["flex-wrap","wrap"],
-          ["flexorder-items","3,11"],
-          ["flexorder-targets","8,3"],
-          ["height",""],
-          ["justify-content","flex-start"],
-          ["multiline-flexitems-targets","5,7"],
-          ["multiline-flexitems-text","extra"],
-          ["width",""],
-          ["writing-mode","horizontal-tb"]
-        ]`;
       }
 
       function createFlexbox() {
@@ -406,7 +377,7 @@
       }
 
       function reset() {
-        document.location.href = `#${getDefaultSettings()}`;
+        document.location.href = `#${DEFAULT_SETTINGS}`;
         onHashChange();
       }
     </script>
