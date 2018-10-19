@@ -33,7 +33,15 @@
         font-weight: bold;
       }
 
-      #togglesettings,
+      #settingstoggle:before {
+        content: "Collapse";
+      }
+
+      #settingstoggle[collapsed]:before {
+        content: "Expand";
+      }
+
+      #settingstoggle,
       #reset {
         background-color: black;
         display: inline-block;
@@ -213,6 +221,7 @@
 
       function onHashChange(event) {
         const container = document.querySelector("settingscontainer");
+        const settingstoggle = document.querySelector("#settingstoggle");
         const settings = getSettings();
 
         for (const [name, value] of settings.entries()) {
@@ -220,8 +229,10 @@
             case "collapsed":
               if (value) {
                 container.classList.add("collapsed");
+                settingstoggle.setAttribute("collapsed", "");
               } else {
                 container.classList.remove("collapsed");
+                settingstoggle.removeAttribute("collapsed");
               }
               break;
             case "box-sizing":
@@ -383,7 +394,7 @@
 
   <body onLoad="init()" onchange="onControlChange()">
     <h3>Settings</h3>
-    <div id="togglesettings" onclick="toggleSettings()">Collapse</div>
+    <div id="settingstoggle" onclick="toggleSettings()"></div>
     <input type="checkbox" id="settings-checkbox" />
     <div id="reset" onclick="reset()">Reset</div>
 
