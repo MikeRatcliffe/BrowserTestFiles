@@ -308,7 +308,10 @@
         const flexGrowTargets = getSettingAsArray("flex-grow-targets");
         const flexShrinkTargets = getSettingAsArray("flex-shrink-targets");
 
-        output.querySelector(containerName).remove();
+        const oldContainer = output.querySelector(containerName);
+        if (oldContainer) {
+          oldContainer.remove();
+        }
 
         output.style.boxSizing = settings.get("box-sizing");
         output.style.direction = settings.get("direction");
@@ -685,22 +688,6 @@
 
     <hr>
 
-    <div id="output">
-      <flex-container class="row">
-        <flex-item></flex-item>
-        <flex-item></flex-item>
-        <flex-item></flex-item>
-        <flex-item></flex-item>
-        <flex-item><br>text</flex-item>
-        <flex-item></flex-item>
-        <flex-item></flex-item>
-        <flex-item></flex-item>
-        <flex-item></flex-item>
-        <flex-item></flex-item>
-        <flex-item></flex-item>
-        <flex-item></flex-item>
-        <flex-item></flex-item>
-      </flex-container>
-    </div>
+    <div id="output"></div>
   </body>
 </html>
