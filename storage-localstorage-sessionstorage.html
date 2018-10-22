@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Local and Session Storage</title>
+
+    <script>
+      function doit() {
+        localStorage.setItem('lsName1', 'lsValue1');
+        localStorage.setItem('lsName2', 'lsValue2');
+        localStorage.setItem('lsName3', 'lsValue3');
+        localStorage.setItem('lsName4', 'lsValue4');
+        localStorage.setItem('lsName5', 'lsValue5');
+
+        sessionStorage.setItem('ssName1', 'ssValue1');
+        sessionStorage.setItem('ssName2', 'ssValue2');
+        sessionStorage.setItem('ssName3', 'ssValue3');
+        sessionStorage.setItem('ssName4', 'ssValue4');
+        sessionStorage.setItem('ssName5', 'ssValue5');
+      }
+    </script>
+  </head>
+  <body onload="doit()">
+
+  </body>
+</html>
