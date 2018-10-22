@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Canvas</title>
+  <style>
+    canvas {
+      border:1px solid #000;
+    }
+  </style>
+
+  <script>
+    function init() {
+      const c = document.querySelector("canvas");
+      const ctx = c.getContext("2d");
+
+      ctx.moveTo(0, 0);
+      ctx.lineTo(200, 200);
+      ctx.stroke();
+    }
+  </script>
+</head>
+<body onload="init()">
+  <canvas width="300" height="300"></canvas>
+</body>
+</html>
