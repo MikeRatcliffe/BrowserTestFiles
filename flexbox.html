@@ -14,7 +14,6 @@
       body {
         font-family: avenir, roboto, helvetica, sans-serif;
         margin: 10px 10px;
-        counter-reset: flex-label;
       }
 
       h2,
@@ -144,11 +143,6 @@
         border: 1px solid black;
         background: #eee;
         margin: 0.5rem;
-      }
-
-      flex-item:before {
-        counter-increment: flex-label;
-        content: counter(flex-label);
       }
     </style>
 
@@ -305,6 +299,9 @@
         for (let i = 0; i < settings.get("flex-items"); i++) {
           const flexItem = document.createElement(flexItemName);
           const currentItem = i + 1;
+
+          const number = document.createTextNode(i + 1);
+          flexItem.appendChild(number);
 
           if (multilineTargets.has(currentItem)) {
             const br = document.createElement("br");
