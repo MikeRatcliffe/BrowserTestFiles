@@ -173,6 +173,7 @@
         ["justify-content","flex-start"],
         ["multiline-flexitems-targets","5,7"],
         ["multiline-flexitems-text","extra"],
+        ["transform","unset"],
         ["width",""],
         ["writing-mode","horizontal-tb"]
       ]`;
@@ -229,32 +230,33 @@
                 settingstoggle.removeAttribute("collapsed");
               }
               break;
+            case "align-content":
+            case "align-items":
+            case "align-self":
             case "box-sizing":
-            case "display":
             case "direction":
-            case "writing-mode":
+            case "display":
+            case "flex-basis":
             case "flex-direction":
             case "flex-wrap":
             case "justify-content":
-            case "align-items":
-            case "align-content":
-            case "flex-basis":
-            case "align-self":
+            case "transform":
+            case "writing-mode":
               const radio = document.querySelector(`[name="${name}"][value="${value}"]`);
               radio.checked = true;
               break;
-            case "width":
-            case "height":
+            case "align-self-targets":
+            case "flex-grow-targets":
+            case "flex-grow":
             case "flex-items":
-            case "multiline-flexitems-targets":
-            case "multiline-flexitems-text":
+            case "flex-shrink-targets":
+            case "flex-shrink":
             case "flexorder-items":
             case "flexorder-targets":
-            case "align-self-targets":
-            case "flex-grow":
-            case "flex-grow-targets":
-            case "flex-shrink":
-            case "flex-shrink-targets":
+            case "height":
+            case "multiline-flexitems-targets":
+            case "multiline-flexitems-text":
+            case "width":
               const textNode = document.querySelector(`#${name}`);
               textNode.value = value;
               break;
@@ -292,6 +294,7 @@
         flexContainer.style.justifyContent = settings.get("justify-content");
         flexContainer.style.alignContent = settings.get("align-content");
         flexContainer.style.alignItems = settings.get("align-items");
+        flexContainer.style.transform = settings.get("transform");
 
         flexContainer.style.width = width;
         flexContainer.style.height = height;
@@ -674,6 +677,15 @@
         <input id="flex-shrink-targets" type="text" />
         set flex-shrink to
         <input id="flex-shrink" type="text" />
+      </div>
+
+      <setting>transform</setting>
+      <div>
+        Apply test transform
+        <input type="radio" name="transform" value="rotate(-5deg) scale(0.8)" id="tt1" />
+        <label for="tt1">true</label>
+        <input type="radio" name="transform" value="unset" id="tt2" />
+        <label for="tt2">false</label>
       </div>
     </settingscontainer>
 
