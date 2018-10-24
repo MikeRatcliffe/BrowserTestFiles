@@ -32,29 +32,31 @@
         font-weight: bold;
       }
 
-      #settingstoggle:before {
+      #settings-checkbox {
+        display: none;
+      }
+
+      #reset,
+      #settings-checkbox + label {
+        display: inline-block;
+        padding: .2em 0.5em;
+        cursor: pointer;
+        border: 1px solid black;
+        color: white;
+        background-color: black;
+        border-radius: 5px;
+        width: -moz-fit-content;
+        font-size: 0.7em;
+        height: 1.5em;
+        margin: 0;
+      }
+
+      #settings-checkbox + label:before {
         content: "Collapse";
       }
 
-      #settingstoggle[collapsed]:before {
+      #settings-checkbox:checked + label:before {
         content: "Expand";
-      }
-
-      #settingstoggle,
-      #reset {
-        background-color: black;
-        display: inline-block;
-        width: -moz-fit-content;
-        color: white;
-        padding: .2em 0.5em;
-        font-size: 0.7em;
-        cursor: pointer;
-        border-radius: 5px;
-        height: 1.5em;
-      }
-
-      #settings-checkbox {
-        display: none;
       }
 
       settingscontainer {
@@ -216,18 +218,18 @@
 
       function onHashChange(event) {
         const container = document.querySelector("settingscontainer");
-        const settingstoggle = document.querySelector("#settingstoggle");
         const settings = getSettings();
 
         for (const [name, value] of settings.entries()) {
           switch(name) {
             case "collapsed":
+              const settingstoggle = document.querySelector("#settings-checkbox");
+              settingstoggle.checked = value;
+
               if (value) {
                 container.classList.add("collapsed");
-                settingstoggle.setAttribute("collapsed", "");
               } else {
                 container.classList.remove("collapsed");
-                settingstoggle.removeAttribute("collapsed");
               }
               break;
             case "align-content":
@@ -378,13 +380,6 @@
                                }));
       }
 
-      function toggleSettings() {
-        const cb = document.querySelector("#settings-checkbox");
-
-        cb.checked = !cb.checked;
-        onControlChange();
-      }
-
       function reset() {
         document.location.href = `#${DEFAULT_SETTINGS}`;
         onHashChange();
@@ -394,8 +389,8 @@
 
   <body onLoad="init()" onchange="onControlChange()">
     <h3>Settings</h3>
-    <div id="settingstoggle" onclick="toggleSettings()"></div>
-    <input type="checkbox" id="settings-checkbox" />
+    <input type="checkbox" id="settings-checkbox" onchange="onControlChange()"/>
+    <label for="settings-checkbox"></label>
     <div id="reset" onclick="reset()">Reset</div>
 
     <settingscontainer>
