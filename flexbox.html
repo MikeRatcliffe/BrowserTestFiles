@@ -128,6 +128,10 @@
         border-radius: 0 .7em .7em 0;
       }
 
+      #transform {
+        width: calc(100% - 50px);
+      }
+
       section {
         margin-bottom: 4rem;
         padding-bottom: 4rem;
@@ -242,7 +246,6 @@
             case "flex-direction":
             case "flex-wrap":
             case "justify-content":
-            case "transform":
             case "writing-mode":
               const radio = document.querySelector(`[name="${name}"][value="${value}"]`);
               radio.checked = true;
@@ -258,6 +261,7 @@
             case "height":
             case "multiline-flexitems-targets":
             case "multiline-flexitems-text":
+            case "transform":
             case "width":
               const textNode = document.querySelector(`#${name}`);
               textNode.value = value;
@@ -675,13 +679,7 @@
       </div>
 
       <setting>transform</setting>
-      <div>
-        Apply test transform
-        <input type="radio" name="transform" value="rotate(-5deg) scale(0.8)" id="tt1" />
-        <label for="tt1">true</label>
-        <input type="radio" name="transform" value="unset" id="tt2" />
-        <label for="tt2">false</label>
-      </div>
+      <input id="transform" type="text" />
     </settingscontainer>
 
     <hr>
