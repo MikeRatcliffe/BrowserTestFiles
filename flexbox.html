@@ -5,8 +5,6 @@
     <title>Flexbox</title>
 
     <style>
-      @import "https://fonts.googleapis.com/css?family=Open+Sans";
-
       html {
         box-sizing: border-box;
       }
@@ -14,12 +12,6 @@
       body {
         font-family: avenir, roboto, helvetica, sans-serif;
         margin: 10px 10px;
-      }
-
-      h2,
-      setting {
-        margin: 0;
-        white-space: nowrap;
       }
 
       h3 {
@@ -30,10 +22,8 @@
       setting {
         display: block;
         font-weight: bold;
-      }
-
-      #settings-checkbox {
-        display: none;
+        margin: 0;
+        white-space: nowrap;
       }
 
       #reset,
@@ -78,7 +68,7 @@
       }
 
       input[type="text"] {
-        font-family: avenir, roboto, helvetica, sans-serif;
+        font-family: inherit;
         font-size: 1em;
         width: 4em;
         height: 1.2em;
@@ -96,10 +86,7 @@
         cursor: pointer;
       }
 
-      input[type="range"] {
-        vertical-align: middle;
-      }
-
+      input[type="checkbox"],
       input[type="radio"] {
         display: none;
       }
@@ -130,12 +117,6 @@
 
       #transform {
         width: calc(100% - 50px);
-      }
-
-      section {
-        margin-bottom: 4rem;
-        padding-bottom: 4rem;
-        border-bottom: 1px solid pink;
       }
 
       flex-container {
