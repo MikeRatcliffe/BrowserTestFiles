@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Transforms</title>
+
+  <style>
+    div {
+      margin: 200px 0 -200px 200px;
+      border: 5px solid black;
+      width: 200px;
+      height: 100px;
+      transform: rotate(30deg);
+    }
+  </style>
+
+  <script>
+    function init() {
+      const div = document.querySelector("div");
+      const matrixString = window.getComputedStyle(div).transform;
+      const matrixArray = matrixString.match(/[\d.]+/g);
+      const matrix = new DOMMatrix(matrixArray);
+      const inverseMatrix = matrix.inverse();
+      const point = new DOMPoint(249.5673370361328, 154.8686065673828);
+
+      console.log("point", point);
+      console.log("inverse", inverseMatrix.transformPoint(point));
+    }
+  </script>
+</head>
+<body onload="init()">
+  <div>Hello World, this is a long text node!</div>
+
+  Transformed: 249.5673370361328, 154.8686065673828
+  <br>
+  Untransformed: x: 208, y: 200
+</body>
+</html>

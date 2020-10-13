@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Flexbox with text node</title>
+
+  <style>
+    body {
+      margin: 0;
+    }
+
+    .flex-container{
+      background: #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-flow: row wrap;
+      width: 50%;
+      font-size: 5em;
+      margin: 100px;
+      padding: 10px;
+      border: 5px black dashed;
+      transform: rotate(0deg);
+    }
+    .flex-container > * {
+      background: red;
+    }
+  </style>
+
+  <!-- <script src="../domvertices.js"></script> -->
+
+  <script>
+    function init() {
+      const node = document.querySelector("div").childNodes[6];
+
+      const rects = node.getBoxQuads();
+      console.log("getBoxQuads", rects);
+    }
+  </script>
+</head>
+<body onload="init()">
+  <div class="flex-container">
+    <span>1</span>
+    <span>2</span>
+    <span>3</span>
+    This is some text
+  </div>
+</body>
+</html>

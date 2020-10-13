@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+
+  <style>
+    #container {
+      width: 200px;
+      display: flex;
+    }
+  </style>
+  <script>
+    function init() {
+      const flexitem1 = document.querySelector("#flexitem1");
+      const flexitem2 = document.querySelector("#flexitem2");
+      const h1 = document.querySelector("h1");
+      const h2 = document.querySelector("h2");
+
+      const flexitem1Container = findFlexParentContainerForNode(flexitem1);
+      const flexitem2Container = findFlexParentContainerForNode(flexitem2);
+      const h1Container = findFlexParentContainerForNode(h1);
+      const h2Container = findFlexParentContainerForNode(h2);
+
+      ok(flexitem1Container, `#flexitem1 is a flex item... container is ${flexitem1Container}`);
+      ok(flexitem2Container, `#flexitem2 is a flex item... container is ${flexitem2Container}`);
+      ok(!h1Container, `h1 is not a flex item... it is a child of a flex item.`);
+      ok(!h2Container, `h2 is not a flex item... it is a child of a flex item.`);
+    }
+
+    function ok(condition, msg) {
+      if (condition) {
+        console.log(`PASS`, msg);
+      } else {
+        console.warn(`FAIL`, msg);
+      }
+    }
+
+    function findFlexParentContainerForNode(node) {
+      if (node.nodeType == node.ELEMENT_NODE) {
+        let style = getComputedStyle(node);
+        let display = style.display;
+        if (!display || display == "none" || display == "contents")
+          return null; // Doesn't generate a box, not a flex item.
+        let position = style.position;
+        if (position == "absolute" || position == "fixed" || style.cssFloat != "none")
+          return null; // Out of flow, not a flex item.
+      }
+      else if (node.nodeType != node.TEXT_NODE)
+        return null;
+      for (let p = node.parentNode; p; p = p.parentNode) {
+        let style = getComputedStyle(p);
+        let display = style.display;
+        if (display.includes("flex") && p.id === "container")
+          return p; // It's a flex item!
+        if (display != "contents")
+          return null; // Not a flex item, for sure.
+        // display: contents, walk to the parent
+      }
+      return null;
+    }
+  </script>
+</head>
+<body onload="init()">
+  <div id="container">
+    <div id="flexitem1">
+      <h1>H1 tag</h1>
+    </div>
+    <div id="flexitem2">
+      <h2>H2 tag</h2>
+    </div>
+  </div>
+</body>
+</html>
